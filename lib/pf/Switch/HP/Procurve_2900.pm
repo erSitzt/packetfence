@@ -6,7 +6,7 @@ pf::Switch::HP::Procurve_2900 - Object oriented module to access SNMP enabled HP
 
 =head1 SYNOPSIS
 
-The pf::Switch::HP::Procurve_2900 module implements an object
+The pf::Switch::HP::Procurve_2900 module implements an object 
 oriented interface to access SNMP enabled HP Procurve 2900 switches.
 
 =head1 BUGS AND LIMITATIONS
@@ -14,7 +14,6 @@ oriented interface to access SNMP enabled HP Procurve 2900 switches.
 VoIP not tested using MAC Authentication/802.1X
 
 =cut
-
 use strict;
 use warnings;
 use Log::Log4perl;
@@ -32,27 +31,26 @@ use pf::config;
 # access technology supported
 sub supportsWiredMacAuth { return $TRUE; }
 sub supportsWiredDot1x { return $TRUE; }
+sub supportsLldp { return $TRUE; }
+sub supportsRadiusVoip { return $TRUE; }
 # inline capabilities
 sub inlineCapabilities { return ($MAC,$PORT); }
-sub supportsLldp { return $TRUE; }
-=item supportsRadiusVoip
-This switch module supports VoIP authorization over RADIUS.
-Use getVoipVsa to return specific RADIUS attributes for VoIP to work.
-=cut
-sub supportsRadiusVoip { return $TRUE; }
 
-=item getVoipVsa {
-Returns RADIUS attributes for voip phone devices.
+=item getVoipVSA
+Get Voice over IP RADIUS Vendor Specific Attribute (VSA).
+TODO: Use Egress-VLANID instead. See: http://wiki.freeradius.org/HP#RFC+4675+%28multiple+tagged%2Funtagged+VLAN%29+Assignment
 =cut
 sub getVoipVsa {
-        my ( $this ) = @_;
+        my ($this) = @_;
         my $logger = Log::Log4perl::get_logger(ref($this));
-        return (
-                'Tunnel-Type' => $RADIUS::VLAN,
-                'Tunnel-Medium-Type' => $RADIUS::ETHERNET,
-                'Tunnel-Private-Group-ID' => $this->getVlanByName('voice'),
-                );
+        my $vlanid = sprintf("%03x\n",$this->getVlanByName('voice'));
+        my $hexvlan = hex("31000".$vlanid);
+        #return ('Egress-VLAN-Name' => "1".$VOICEVLANAME);
+        #$logger->info("Egress-VLANID : " .hex("31000".$vlanid));
+        return ('Egress-VLANID' => $hexvlan,);
 }
+
+
 =item isVoIPEnabled
 Supports VoIP if enabled.
 =cut
@@ -81,7 +79,7 @@ sub getPhonesLLDPAtIfIndex {
         }
         sleep(4);
         $logger->trace(
-                "SNMP get_next_request for lldpRemChassisIdSubtype: $oid_lldpRemChassisIdSubtype");
+                "SNMP get_next_request for lldpRemSysDesc: $oid_lldpRemChassisIdSubtype");
         my $result = $this->{_sessionRead}
         ->get_table( -baseoid => $oid_lldpRemChassisIdSubtype );
         foreach my $oid ( keys %{$result} ) {
@@ -102,7 +100,7 @@ sub getPhonesLLDPAtIfIndex {
                                         if ($MACresult
                                                 && (unpack('H*', $MACresult->{
                                                         "$oid_lldpRemPortId.$cache_lldpRemTimeMark.$cache_lldpRemLocalPortNum.$cache_lldpRemIndex"
-                                                        })
+                                                })
                                                 =~ /^([0-9A-Z]{2})([0-9A-Z]{2})([0-9A-Z]{2})([0-9A-Z]{2})([0-9A-Z]{2})([0-9A-Z]{2})/i
                                                 )
                                                 )
