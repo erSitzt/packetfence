@@ -1,13 +1,13 @@
-package pf::Switch::HP::Procurve_2900;
+package pf::Switch::HP::Procurve_2920;
 
 =head1 NAME
 
-pf::Switch::HP::Procurve_2900 - Object oriented module to access SNMP enabled HP Procurve 2900 switches
+pf::Switch::HP::Procurve_2920 - Object oriented module to access SNMP enabled HP Procurve 2920 switches
 
 =head1 SYNOPSIS
 
-The pf::Switch::HP::Procurve_2900 module implements an object 
-oriented interface to access SNMP enabled HP Procurve 2900 switches.
+The pf::Switch::HP::Procurve_2920 module implements an object 
+oriented interface to access SNMP enabled HP Procurve 2920 switches.
 
 =head1 BUGS AND LIMITATIONS
 
@@ -20,7 +20,7 @@ use Log::Log4perl;
 use Net::SNMP;
 use base ('pf::Switch::HP');
 
-sub description { 'HP ProCurve 2900 Series' }
+sub description { 'HP ProCurve 2920 Series' }
 
 # importing switch constants
 use pf::Switch::constants;
