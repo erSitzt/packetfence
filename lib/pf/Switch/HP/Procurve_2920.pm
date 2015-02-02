@@ -38,15 +38,12 @@ sub inlineCapabilities { return ($MAC,$PORT); }
 
 =item getVoipVSA
 Get Voice over IP RADIUS Vendor Specific Attribute (VSA).
-TODO: Use Egress-VLANID instead. See: http://wiki.freeradius.org/HP#RFC+4675+%28multiple+tagged%2Funtagged+VLAN%29+Assignment
 =cut
 sub getVoipVsa {
         my ($this) = @_;
         my $logger = Log::Log4perl::get_logger(ref($this));
         my $vlanid = sprintf("%03x\n",$this->getVlanByName('voice'));
         my $hexvlan = hex("31000".$vlanid);
-        #return ('Egress-VLAN-Name' => "1".$VOICEVLANAME);
-        #$logger->info("Egress-VLANID : " .hex("31000".$vlanid));
         return ('Egress-VLANID' => $hexvlan,);
 }
 
